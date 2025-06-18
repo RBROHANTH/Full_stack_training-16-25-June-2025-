@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>change text</title>
+    <script>
+        function changeText() {
+            var data= document.getElementById("one")
+            data.innerHTML = data.innerHTML == "Na Tha Da Leoo, Leo DAs "?"Sir, neega yarapathi pacurugane theriyathu":"Na Tha Da Leoo, Leo DAs ";
+            data.style.color = data.style.color == "Red"?"Blue":"Red";
+        }
+        function changecolor() {
+            var data =  document.getElementById("one");
+           data.style.color="Red";
+           data.style.fontSize="30px";
+        }
+    </script>
+</head>
+<body>
+    <p id="one" style="color: Blue;">Sir, neega yarapathi pacurugane theriyathu</p>
+    <button onclick="changeText()">Change Me</button>
+    <button onclick="changecolor()">Change color</button>
+</body>
+</html>
