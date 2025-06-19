@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROCK PAPER SCISSOR</title>
+    <script>
+        function getResult(userchoice){
+            var choice = ["ROCK ✊","PAPER ✋","SCISSOR ✌️"];
+            var computer_choice = choice[Math.floor(Math.random()*3)];
+            console.log(computer_choice);
+            var Result =""
+            if(userchoice === computer_choice){
+                    Result="DRAW 😐🔁⚖️🤷"
+                    document.getElementById("Result").style.color="Black";
+            } else if (
+                (userchoice == 'ROCK ✊' && computer_choice == 'PAPER ✋') ||
+                (userchoice == 'PAPER ✋' && computer_choice == 'SCISSOR ✌️') ||
+                (userchoice == 'SCISSOR ✌️' && computer_choice == 'ROCK ✊')
+            ) {
+                Result = "LOSE  😞💔😭👎";
+                document.getElementById("Result").style.color="Red";
+            } else {
+                Result = "WIN 🥳🎉🏅✨";
+                document.getElementById("Result").style.color="Green";
+            }
+            document.getElementById("senario").innerHTML = userchoice +"   VS   "+ computer_choice;
+            document.getElementById("Result").innerHTML = Result;
+        }
+        var details = async () => {
+            var response = await fetch('https://your-api-url.com'); // Use a valid URL here
+            var users = await response.json();
+            console.log(users);
+        }
+        details();
+    </script>
+    
+</head>
+<body><div  style="text-align: center;">
+    <h1>ROCK PAPER SCISSOR</h1>
+    <h5>Choose any one</h5>
+    <button onclick="getResult('ROCK ✊')">ROCK ✊</button>
+    <button onclick="getResult('PAPER ✋')">PAPER ✋</button>
+    <button onclick="getResult('SCISSOR ✌️')">SCISSOR ✌️</button>
+    <h1>YOU  VS  COMPUTER</h1>
+    <h1 id="senario" style="color: rgb(0, 17, 255);"></h1>
+    <h1 id="Result"></h1></div>
+</body>
+</html>

@@ -18,5 +18,14 @@
     <input type="text" id="name">
     <button onclick="changeText()">Add</button>
     <ul id="list"></ul>
+    <script>
+        function changeText() {
+            var data = document.getElementById("name").value;
+            var li = document.createElement("li");
+            li.innerText = data;
+            document.getElementById("list").append(li);
+            document.getElementById("name").value = "";
+        }
+    </script>
 </body>
 </html>
