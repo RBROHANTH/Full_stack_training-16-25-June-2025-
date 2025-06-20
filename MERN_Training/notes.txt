@@ -1,0 +1,2 @@
+to create routings among the pages in react
+    ## npm i react-router-dom

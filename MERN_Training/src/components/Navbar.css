@@ -1,0 +1,21 @@
+.navbar{
+    background-color: aqua;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    border-radius: 10px;
+
+    
+}
+.link:hover{
+    background-color: bisque;
+}
+.link{
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: rgb(42, 71, 165);
+    border-radius: 10px;
+    list-style: none;
+    justify-content: space-between;
+    text-decoration: none;
+}

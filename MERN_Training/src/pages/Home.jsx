@@ -14,7 +14,6 @@ function Home({login}) {
   }
 }
   return (
-    // <div className='container'>
     <div>
       <h1>login</h1>
       <label>USERNAME</label>
