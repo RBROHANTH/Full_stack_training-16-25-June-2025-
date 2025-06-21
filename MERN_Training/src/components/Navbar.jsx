@@ -14,6 +14,8 @@ const Navbar = () => {
             <Link to = '/child' className='link'>CHILD</Link>
             <Link to = '/hooks' className='link'>HOOKS</Link>
             <Link to = '/login' className='link'>LOGIN</Link>
+            <Link to = '/ref' className='link'>REF</Link>
+            <Link to = '/reducer' className='link'>REDUCER</Link>
         </nav>
     </div>
   )
