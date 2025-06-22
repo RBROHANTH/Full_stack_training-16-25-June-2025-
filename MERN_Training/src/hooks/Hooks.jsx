@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import './hooks.css'
+import './Hooks.css'
 
 const Hooks = () => {
   return (
