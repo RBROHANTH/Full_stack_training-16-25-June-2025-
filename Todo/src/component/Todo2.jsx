@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
+const API = 'http://localhost:3000'
 
 const Todo2 = () => {
   const [task, setTask] = useState('')
@@ -7,7 +8,7 @@ const Todo2 = () => {
   const [editing, setEditing] = useState(null)
 
   const fetchTodo = async () => {
-    const responce = await axios.get('http://localhost:3000/todo/')
+    const responce = await axios.get(`${API}/todo/`)
     setTodos(responce.data)
   }
 
@@ -18,23 +19,23 @@ const Todo2 = () => {
   const handleAddOrEdit = async (e) => {
     e.preventDefault()
     if (editing) {
-      await axios.put(`http://localhost:3000/todo/edit/${editing._id}`, { task })
+      await axios.put(`${API}/todo/edit/${editing._id}`, { task })
       setEditing(null)
     } else {
-      await axios.post('http://localhost:3000/todo/', { task })
+      await axios.post(`${API}/todo/`, { task })
     }
     setTask('')
     fetchTodo()
   }
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:3000/todo/delete/${id}`)
+    await axios.delete(`${API}/todo/delete/${id}`)
     fetchTodo()
   }
 
   // Toggle the status of a todo
   const handleToggleStatus = async (todo) => {
-    await axios.put(`http://localhost:3000/todo/edit/${todo._id}`, { task: todo.task, status: !todo.status })
+    await axios.put(`${API}/todo/edit/${todo._id}`, { task: todo.task, status: !todo.status })
     fetchTodo()
   }
 
