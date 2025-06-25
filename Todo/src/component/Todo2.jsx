@@ -41,7 +41,7 @@ const Todo2 = () => {
 
   return (
     <div className="todo-container">
-      <h1>Todos</h1>
+      <h1>Todo List</h1>
       <form className="todo-form" onSubmit={handleAddOrEdit}>
         <input
           className="todo-input"
