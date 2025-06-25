@@ -40,22 +40,24 @@ const Todo2 = () => {
   }
 
   return (
-    <div>
+    <div className="todo-container">
       <h1>Todos</h1>
-      <form onSubmit={handleAddOrEdit}>
+      <form className="todo-form" onSubmit={handleAddOrEdit}>
         <input
+          className="todo-input"
           type="text"
           value={task}
           placeholder="Enter the task"
           onChange={e => setTask(e.target.value)}
         />
-        <button type="submit">{editing ? 'Update' : 'Add'}</button>
+        <button className="todo-btn" type="submit">{editing ? 'Update' : 'Add'}</button>
       </form>
-      <ul>
+      <ul className="todo-list">
         {todos.map(todo => (
-          <li key={todo._id}>
+          <li className="todo-item" key={todo._id}>
             <span
               onClick={() => handleToggleStatus(todo)}
+              className="todo-task"
               style={{
                 cursor: 'pointer',
                 textDecoration: todo.status ? 'line-through' : 'none'
@@ -63,11 +65,11 @@ const Todo2 = () => {
             >
               <p>{todo.task}</p>
             </span>
-            <button onClick={() => {
+            <button className="todo-btn" onClick={() => {
               setEditing(todo)
               setTask(todo.task)
             }}>Edit</button>
-            <button onClick={() => handleDelete(todo._id)}>Delete</button>
+            <button className="todo-btn delete" onClick={() => handleDelete(todo._id)}>Delete</button>
           </li>
         ))}
       </ul>
