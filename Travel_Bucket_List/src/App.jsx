@@ -1,43 +1,53 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './App.css';
 import headerImg from './assets/image.png';
 
-function App() {
-  const [places, setPlaces] = useState([]);
-  const [newPlace, setNewPlace] = useState('');
+const API = 'http://localhost:3000/api/bucketlist'; // Change as needed
+
+const BucketList = () => {
+  const [place, setPlace] = useState('');
+  const [bucketList, setBucketList] = useState([]);
+  const [editing, setEditing] = useState(null);
   const [gallery, setGallery] = useState({ open: false, images: [], index: 0 });
 
-  const handleAddPlace = (e) => {
+  const fetchBucketList = async () => {
+    const response = await axios.get(API);
+    setBucketList(response.data);
+  };
+
+  useEffect(() => {
+    fetchBucketList();
+  }, []);
+
+  const handleAddOrEdit = async (e) => {
     e.preventDefault();
-    if (!newPlace.trim()) return;
-    setPlaces([
-      ...places,
-      { id: Date.now(), name: newPlace, date: '', visited: false, images: [] },
-    ]);
-    setNewPlace('');
+    if (editing) {
+      await axios.put(`${API}/edit/${editing._id}`, { place });
+      setEditing(null);
+    } else {
+      await axios.post(API, { place });
+    }
+    setPlace('');
+    fetchBucketList();
   };
 
-  const handleDelete = (id) => {
-    setPlaces(places.filter((place) => place.id !== id));
+  const handleDelete = async (id) => {
+    await axios.delete(`${API}/delete/${id}`);
+    fetchBucketList();
   };
 
-  const handleVisited = (id) => {
-    setPlaces(
-      places.map((place) =>
-        place.id === id ? { ...place, visited: !place.visited } : place
-      )
-    );
+  const handleToggleVisited = async (item) => {
+    await axios.put(`${API}/edit/${item._id}`, {
+      place: item.place,
+      visited: !item.visited,
+      notes: item.notes,
+      image: item.image
+    });
+    fetchBucketList();
   };
 
-  const handleDateChange = (id, date) => {
-    setPlaces(
-      places.map((place) =>
-        place.id === id ? { ...place, date } : place
-      )
-    );
-  };
-
-  const handleImagesChange = (id, files) => {
+  const handleImagesChange = async (id, files) => {
     const fileArr = Array.from(files);
     const readers = fileArr.map(
       (file) =>
@@ -47,13 +57,18 @@ function App() {
           reader.readAsDataURL(file);
         })
     );
-    Promise.all(readers).then((images) => {
-      setPlaces((prev) =>
-        prev.map((place) =>
-          place.id === id ? { ...place, images: [...place.images, ...images] } : place
-        )
-      );
+    const images = await Promise.all(readers);
+
+    // Find the item to update
+    const item = bucketList.find((item) => item._id === id);
+
+    // Update the backend with the new images
+    await axios.put(`${API}/edit/${id}`, {
+      ...item,
+      images: [...(item.images || []), ...images],
     });
+
+    fetchBucketList();
   };
 
   const openGallery = (images, index) => {
@@ -65,11 +80,11 @@ function App() {
   };
 
   const nextImage = () => {
-    setGallery((g) => ({ ...g, index: (g.index + 1) % g.images.length }));
+    setGallery(g => ({ ...g, index: (g.index + 1) % g.images.length }));
   };
 
   const prevImage = () => {
-    setGallery((g) => ({ ...g, index: (g.index - 1 + g.images.length) % g.images.length }));
+    setGallery(g => ({ ...g, index: (g.index - 1 + g.images.length) % g.images.length }));
   };
 
   return (
@@ -82,57 +97,67 @@ function App() {
       <main>
         <section className="bucket-list-section">
           <h2>My Bucket List</h2>
-          <form onSubmit={handleAddPlace} className="add-place-form">
+          <form onSubmit={handleAddOrEdit} className="add-place-form">
             <input
               type="text"
-              placeholder="Add a new place..."
-              value={newPlace}
-              onChange={(e) => setNewPlace(e.target.value)}
+              placeholder="Enter a place"
+              value={place}
+              onChange={(e) => setPlace(e.target.value)}
             />
-            <button type="submit">Add</button>
+            <button type="submit">{editing ? 'Update' : 'Add'}</button>
           </form>
           <ul className="bucket-list">
-            {places.map((place) => (
-              <li key={place.id} className={place.visited ? 'visited' : ''}>
+            {bucketList.map(item => (
+              <li key={item._id} className={item.visited ? 'visited' : ''}>
                 <div className="place-header">
-                  <span>{place.name}</span>
-                  <button onClick={() => handleDelete(place.id)} title="Delete">🗑️</button>
+                  <span
+                    onClick={() => handleToggleVisited(item)}
+                    style={{
+                      cursor: 'pointer',
+                      textDecoration: item.visited ? 'line-through' : 'none'
+                    }}
+                  >
+                    {item.place}
+                  </span>
+                  <button onClick={() => handleDelete(item._id)} title="Delete">🗑️</button>
                 </div>
                 <div className="place-controls">
                   <label>
                     Date:
                     <input
                       type="date"
-                      value={place.date}
-                      onChange={(e) => handleDateChange(place.id, e.target.value)}
+                      value={item.date}
+                      onChange={(e) => {
+                        // Handle date change
+                      }}
                     />
                   </label>
                   <label>
                     <input
                       type="checkbox"
-                      checked={place.visited}
-                      onChange={() => handleVisited(place.id)}
+                      checked={item.visited}
+                      onChange={() => handleToggleVisited(item)}
                     />
                     Visited
                   </label>
-                  {place.visited && (
+                  {item.visited && (
                     <label className="image-upload">
                       <span>Add Photos: </span>
                       <input
                         type="file"
                         accept="image/*"
                         multiple
-                        onChange={(e) => handleImagesChange(place.id, e.target.files)}
+                        onChange={e => handleImagesChange(item._id, e.target.files)}
                       />
-                      {place.images.length > 0 && (
+                      {Array.isArray(item.images) && item.images.length > 0 && (
                         <div className="gallery-preview">
-                          {place.images.map((img, idx) => (
+                          {item.images.map((img, idx) => (
                             <img
                               key={idx}
                               src={img}
-                              alt={place.name + ' ' + (idx + 1)}
+                              alt={item.place + ' ' + (idx + 1)}
                               className="gallery-thumb"
-                              onClick={() => openGallery(place.images, idx)}
+                              onClick={() => openGallery(item.images, idx)}
                             />
                           ))}
                         </div>
@@ -144,23 +169,23 @@ function App() {
             ))}
           </ul>
         </section>
-        {gallery.open && (
-          <div className="gallery-modal" onClick={closeGallery}>
-            <div className="gallery-modal-content" onClick={e => e.stopPropagation()}>
-              <button className="gallery-close" onClick={closeGallery}>&times;</button>
-              <button className="gallery-nav left" onClick={prevImage}>&lt;</button>
-              <img src={gallery.images[gallery.index]} alt="Gallery" className="gallery-main-img" />
-              <button className="gallery-nav right" onClick={nextImage}>&gt;</button>
-              <div className="gallery-count">{gallery.index + 1} / {gallery.images.length}</div>
-            </div>
-          </div>
-        )}
       </main>
       <footer>
         <p>&copy; {new Date().getFullYear()} Travel Bucket List</p>
       </footer>
+      {gallery.open && (
+        <div className="gallery-modal" onClick={closeGallery}>
+          <div className="gallery-modal-content" onClick={e => e.stopPropagation()}>
+            <button className="gallery-close" onClick={closeGallery}>&times;</button>
+            <button className="gallery-nav left" onClick={prevImage}>&lt;</button>
+            <img src={gallery.images[gallery.index]} alt="Gallery" className="gallery-main-img" />
+            <button className="gallery-nav right" onClick={nextImage}>&gt;</button>
+            <div className="gallery-count">{gallery.index + 1} / {gallery.images.length}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+};
 
-export default App;
+export default BucketList;
