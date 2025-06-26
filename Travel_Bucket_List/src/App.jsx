@@ -3,7 +3,7 @@ import axios from 'axios';
 import './App.css';
 import headerImg from './assets/image.png';
 
-const API = 'http://localhost:3000/api/bucketlist'; // Change as needed
+const API = 'https://final-project-backend-badp.onrender.com/api/bucketlist'; // Change as needed
 
 const BucketList = () => {
   const [place, setPlace] = useState('');
